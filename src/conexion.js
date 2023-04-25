@@ -8,6 +8,6 @@ const connection = {
         database: 'rutaexperiencia',
     }
 }
-module.exports = {
-    connection
-}
+
+const knex = require('knex')(connection)
+module.exports = knex
