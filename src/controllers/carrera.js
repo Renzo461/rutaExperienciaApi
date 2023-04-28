@@ -5,7 +5,7 @@ const getCarreras = (req = request, res = response) => {
 
     knex
         .select('*')
-        .from('carrera')
+        .from('tblCarrera')
         .then(carreras => {
 
             if (carreras.length === 0) {
@@ -32,7 +32,7 @@ const getCarrera = (req = request, res = response) => {
     const IdCarrera = req.params.id
     knex
         .select('*')
-        .from('carrera')
+        .from('tblCarrera')
         .where('IdCarrera', IdCarrera)
         .then(([carrera]) => {
 
@@ -59,7 +59,7 @@ const postCarrera = (req = request, res = response) => {
     const newBeneficio = req.body
     knex
         .insert(newBeneficio)
-        .into("beneficio")
+        .into("tblCarrera")
         .then(([beneficio]) => {
 
             return res.status(201).json({

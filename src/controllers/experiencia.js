@@ -7,15 +7,8 @@ const getExperiencias = async (req = request, res = response) => {
 
         await knex
             .select('*')
-            .from("experiencia")
+            .from("tblExperiencia")
             .then(experiencias => {
-
-                if (experiencias.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: 'No hay Experiencias'
-                    })
-                }
 
                 return res.status(200).json(experiencias)
             })
@@ -38,7 +31,7 @@ const getExperiencia = async (req = request, res = response) => {
 
         await knex
             .select("*")
-            .from("experiencia")
+            .from("tblExperiencia")
             .where('IdExperiencia', IdExperiencia)
             .then(([experiencia]) => {
                 if (!experiencia) {
@@ -66,16 +59,9 @@ const getExperienciasCarrera = async (req = request, res = response) => {
         const IdCarrera = req.params.IdCarrera
         await knex
             .select("*")
-            .from("experiencia")
+            .from("tblExperiencia")
             .where("IdCarrera", IdCarrera)
             .then(experiencias => {
-
-                if (experiencias.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: "No hay experiencias"
-                    })
-                }
 
                 return res.status(200).json(experiencias)
             })
@@ -96,7 +82,7 @@ const postExperiencia = async (req = request, res = response) => {
         // SUBIR EXPERIENCIA
         await knex
             .insert(experiencia)
-            .into("experiencia")
+            .into("tblExperiencia")
             .then(([id]) => {
                 return res.status(201).json({
                     ok: true,
@@ -104,7 +90,7 @@ const postExperiencia = async (req = request, res = response) => {
                 });
             })
             .catch((error) => {
-                
+
                 return res.status(400).json({
                     ok: false,
                     msg: 'Error al actualizar la experiencia'
@@ -127,7 +113,7 @@ const putExperiencia = async (req = request, res = response) => {
         const experiencia = req.body
 
         // EDITAR EXPERIENCIA
-        await knex('experiencia')
+        await knex('tblExperiencia')
             .where("IdExperiencia", IdExperiencia)
             .update(experiencia)
             .then(r => {
@@ -156,7 +142,7 @@ const putExperiencia = async (req = request, res = response) => {
 const deleteExperiencia = async (req = request, res = response) => {
     try {
         const IdExperiencia = req.params.id
-        await knex('experiencia')
+        await knex('tblExperiencia')
             .where("IdExperiencia", IdExperiencia)
             .del()
             .then((experiencia) => {

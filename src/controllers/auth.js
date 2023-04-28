@@ -13,7 +13,7 @@ const newUsuario = async (req = request, res = response) => {
         // VERIFICAR SI EL EMAIL YA ESTA REGISTRADO
         let usuario = await knex
             .select("*")
-            .from("usuario")
+            .from("tblUsuario")
             .where("UsEmail", UsEmail)
             .then(r => r[0])
         if (usuario) {
@@ -26,7 +26,7 @@ const newUsuario = async (req = request, res = response) => {
         // VERIFICAR SI EL DNI YA ESTA REGISTRADO
         usuario = await knex
             .select("*")
-            .from("usuario")
+            .from("tblUsuario")
             .where("UsDNI", UsDNI)
             .then(r => r[0])
 
@@ -40,7 +40,7 @@ const newUsuario = async (req = request, res = response) => {
         //VERIFICAR SI LA CARRERA EXISTE
         let carrera = await knex
             .select("*")
-            .from("carrera")
+            .from("tblCarrera")
             .where("IdCarrera", IdCarrera)
             .then(r => r[0])
 
@@ -58,13 +58,13 @@ const newUsuario = async (req = request, res = response) => {
         // CREAR USUARIO
         const [IdUsuario] = await knex
             .insert(newUser)
-            .into("usuario")
+            .into("tblUsuario")
 
         // CREAR COORDINADOR
         const newCoor = { IdCarrera, IdUsuario }
         const [IdCoordinador] = await knex
             .insert(newCoor)
-            .into("coordinador")
+            .into("tblCoordinador")
         return res.status(201).json({
             ok: true,
             msg: "coordinador creado",
@@ -87,9 +87,9 @@ const loginUsuario = async (req = request, res = response) => {
     try {
         const usuario = await knex
             .select("*")
-            .from("usuario")
-            .join('coordinador', 'coordinador.IdUsuario', '=', 'usuario.IdUsuario')
-            .join('carrera', 'carrera.IdCarrera', '=', 'coordinador.IdCarrera')
+            .from("tblUsuario")
+            .join('tblCoordinador', 'tblCoordinador.IdUsuario', '=', 'tblUsuario.IdUsuario')
+            .join('tblCarrera', 'tblCarrera.IdCarrera', '=', 'tblCoordinador.IdCarrera')
             .where('UsEmail', user)
             .then(r => r[0])
         if (!usuario) {

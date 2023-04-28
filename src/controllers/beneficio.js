@@ -5,7 +5,7 @@ const getBeneficios = (req = request, res = response) => {
 
     knex
         .select('*')
-        .from('beneficio')
+        .from('tblBeneficio')
         .then(beneficios => {
 
             if (beneficios.length === 0) {
@@ -32,7 +32,7 @@ const getBeneficio = (req = request, res = response) => {
     const IdBeneficio = req.params.id
     knex
         .select('*')
-        .from('beneficio')
+        .from('tblBeneficio')
         .where('IdBeneficio', IdBeneficio)
         .then(([beneficio]) => {
 
@@ -60,7 +60,7 @@ const getBeneficiosCarrera = (req = request, res = response) => {
     const IdCarrera = req.params.id
     knex
         .select('*')
-        .from('beneficio')
+        .from('tblBeneficio')
         .where('IdCarrera', IdCarrera)
         .then((beneficios) => {
 
@@ -88,7 +88,7 @@ const postBeneficio = (req = request, res = response) => {
     const newBeneficio = req.body
     knex
         .insert(newBeneficio)
-        .into("beneficio")
+        .into("tblBeneficio")
         .then(([beneficio]) => {
 
             return res.status(201).json({
@@ -111,7 +111,7 @@ const putBeneficio = (req = request, res = response) => {
 
     const IdBeneficio = req.params.id
     const editBeneficio = req.body
-    knex('beneficio')
+    knex('tblBeneficio')
         .where("IdBeneficio", IdBeneficio)
         .update(editBeneficio)
         .then((beneficio) => {
@@ -142,7 +142,7 @@ const putBeneficio = (req = request, res = response) => {
 
 const deleteBeneficio = (req = request, res = response) => {
     const IdBeneficio = req.params.id
-    knex('beneficio')
+    knex('tblBeneficio')
         .where("IdBeneficio", IdBeneficio)
         .del()
         .then((beneficio) => {

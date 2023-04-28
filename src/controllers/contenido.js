@@ -6,7 +6,7 @@ const getContenidos = async (req = request, res = response) => {
 
         await knex
             .select('*')
-            .from('contenido')
+            .from('tblContenido')
             .then(contenidos => {
 
                 // NO SE ENCONTRARON CONTENIDOS
@@ -39,7 +39,7 @@ const getContenido = async (req = request, res = response) => {
         const IdContenido = req.params.IdContenido
         await knex
             .select('*')
-            .from('contenido')
+            .from('tblContenido')
             .where('IdContenido', IdContenido)
             .then(([contenido]) => {
 
@@ -73,7 +73,7 @@ const getContenidosExperiencia = async (req = request, res = response) => {
         const IdExperiencia = req.params.IdExperiencia
         await knex
             .select('*')
-            .from('contenido')
+            .from('tblContenido')
             .where('IdExperiencia', IdExperiencia)
             .then(contenidos => {
 
@@ -107,7 +107,7 @@ const postContenido = async (req = request, res = response) => {
         const newContenido = req.body
         await knex
             .insert(newContenido)
-            .into("contenido")
+            .into("tblContenido")
             .then(([contenido]) => {
 
                 // SE CREO EXITOSAMENTE EL CONTENIDO
@@ -145,7 +145,7 @@ const putContenido = async (req = request, res = response) => {
         const IdContenido = req.params.IdContenido
         const contenido = req.body
 
-        await knex('contenido')
+        await knex('tblContenido')
             .where("IdContenido", IdContenido)
             .update(contenido)
             .then(r => {
@@ -193,7 +193,7 @@ const deleteContenido = async (req = request, res = response) => {
     try {
 
         const IdContenido = req.params.IdContenido
-        await knex('contenido')
+        await knex('tblContenido')
             .where("IdContenido", IdContenido)
             .del()
             .then(contenido => {
