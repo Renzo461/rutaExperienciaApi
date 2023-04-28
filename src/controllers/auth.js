@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs')
 // const { generarJWT } = require('../helpers/jwt.js')
 
 const newUsuario = async (req = request, res = response) => {
-    const { UsDNI, IdCarrera, UsEmail } = req.body
+    const { UsDNI, IdCarrera, UsEmail } = req.body    
+
     const newUser = req.body
     delete newUser.IdCarrera
     try {
@@ -53,21 +54,21 @@ const newUsuario = async (req = request, res = response) => {
         // ENCRIPTAR CONTRASEÑA
         const salt = bcrypt.genSaltSync()
         newUser.UsContrasena = bcrypt.hashSync(newUser.UsContrasena, salt)
-        
+
         // CREAR USUARIO
-        const IdUsuario = await knex
+        const [IdUsuario] = await knex
             .insert(newUser)
             .into("usuario")
 
         // CREAR COORDINADOR
-        const newCoor = { IdCarrera, IdUsuario: IdUsuario[0] }
-        const IdCoordinador = await knex
+        const newCoor = { IdCarrera, IdUsuario }
+        const [IdCoordinador] = await knex
             .insert(newCoor)
             .into("coordinador")
         return res.status(201).json({
             ok: true,
             msg: "coordinador creado",
-            IdCoordinador: IdCoordinador[0]
+            IdCoordinador
         })
 
     } catch (error) {

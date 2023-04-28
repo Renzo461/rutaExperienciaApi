@@ -4,6 +4,7 @@ const auth = require('./routes/auth')
 const experiencia = require('./routes/experiencia')
 const contenido = require('./routes/contenido')
 const beneficio = require('./routes/beneficio')
+const carrera = require('./routes/carrera')
 
 // CREACION DEL SERVIDOR
 const app = express()
@@ -32,3 +33,4 @@ app.use('/auth', auth)
 app.use('/experiencia', experiencia)
 app.use('/contenido', contenido)
 app.use('/beneficio', beneficio)
+app.use('/carrera', carrera)
