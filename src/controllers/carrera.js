@@ -2,19 +2,10 @@ const { request, response } = require('express')
 const knex = require('../conexion')
 
 const getCarreras = (req = request, res = response) => {
-
     knex
         .select('*')
         .from('tblCarrera')
         .then(carreras => {
-
-            if (carreras.length === 0) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: 'No hay carreras'
-                })
-            }
-
             return res.status(200).json(carreras)
         })
         .catch((error) => {
@@ -24,25 +15,17 @@ const getCarreras = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
-
 }
 
 const getCarrera = (req = request, res = response) => {
 
     const IdCarrera = req.params.id
+
     knex
         .select('*')
         .from('tblCarrera')
         .where('IdCarrera', IdCarrera)
         .then(([carrera]) => {
-
-            if (!carrera) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: 'No existe la carrera'
-                })
-            }
-
             return res.status(200).json(carrera)
         })
         .catch((error) => {
@@ -57,11 +40,11 @@ const getCarrera = (req = request, res = response) => {
 const postCarrera = (req = request, res = response) => {
 
     const newBeneficio = req.body
+
     knex
         .insert(newBeneficio)
         .into("tblCarrera")
         .then(([beneficio]) => {
-
             return res.status(201).json({
                 ok: true,
                 msg: `Se creo el beneficio con id ${beneficio}`,
@@ -82,11 +65,11 @@ const putCarrera = (req = request, res = response) => {
 
     const IdBeneficio = req.params.id
     const editBeneficio = req.body
+
     knex('beneficio')
         .where("IdBeneficio", IdBeneficio)
         .update(editBeneficio)
         .then((beneficio) => {
-
             if (!beneficio) {
                 return res.status(400).json({
                     ok: false,
@@ -98,8 +81,6 @@ const putCarrera = (req = request, res = response) => {
                 ok: true,
                 msg: `Beneficio ${IdBeneficio} editado`
             })
-
-
         })
         .catch((error) => {
             console.log(error)
@@ -112,12 +93,13 @@ const putCarrera = (req = request, res = response) => {
 }
 
 const deleteCarrera = (req = request, res = response) => {
+
     const IdBeneficio = req.params.id
+
     knex('beneficio')
         .where("IdBeneficio", IdBeneficio)
         .del()
         .then((beneficio) => {
-
             if (!beneficio) {
                 return res.status(400).json({
                     ok: false,
@@ -129,8 +111,6 @@ const deleteCarrera = (req = request, res = response) => {
                 ok: true,
                 msg: `Beneficio ${IdBeneficio} eliminado`
             })
-
-
         })
         .catch((error) => {
             console.log(error)

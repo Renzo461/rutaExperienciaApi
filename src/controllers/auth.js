@@ -89,7 +89,6 @@ const loginUsuario = async (req = request, res = response) => {
             .select("*")
             .from("tblUsuario")
             .join('tblCoordinador', 'tblCoordinador.IdUsuario', '=', 'tblUsuario.IdUsuario')
-            .join('tblCarrera', 'tblCarrera.IdCarrera', '=', 'tblCoordinador.IdCarrera')
             .where('UsEmail', user)
             .then(r => r[0])
         if (!usuario) {

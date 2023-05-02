@@ -2,228 +2,141 @@ const { request, response } = require('express')
 const knex = require('../conexion.js')
 
 const getContenidos = async (req = request, res = response) => {
-    try {
-
-        await knex
-            .select('*')
-            .from('tblContenido')
-            .then(contenidos => {
-
-                // NO SE ENCONTRARON CONTENIDOS
-                if (contenidos.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: 'No hay contenidos'
-                    })
-                }
-
-                // SE ENCONTRARON CONTENIDOS
-                return res.status(200).json(contenidos)
-            })
-
-    }
-    catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
+    await knex
+        .select('*')
+        .from('tblContenido')
+        .then(contenidos => {
+            return res.status(200).json(contenidos)
         })
-
-    }
+        .catch((error) => {
+            console.log(error)
+            res.status(500).json({
+                ok: false,
+                msg: 'Por Favor hable con el administrador'
+            })
+        })
 }
 
 const getContenido = async (req = request, res = response) => {
-    try {
 
-        const IdContenido = req.params.IdContenido
-        await knex
-            .select('*')
-            .from('tblContenido')
-            .where('IdContenido', IdContenido)
-            .then(([contenido]) => {
+    const IdContenido = req.params.IdContenido
 
-                if (!contenido) {
-                    // NO SE ENCONTRO EL CONTENIDO
-                    return res.status(404).json({
-                        ok: false,
-                        msg: 'No existe el contenido'
-                    })
-                }
-
-                // SE ENCONTRO EL CONTENIDO
-                return res.status(200).json(contenido)
-            })
-
-    }
-    catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
+    await knex
+        .select('*')
+        .from('tblContenido')
+        .where('IdContenido', IdContenido)
+        .then(([contenido]) => {
+            return res.status(200).json(contenido)
         })
-
-    }
+        .catch((error) => {
+            console.log(error)
+            res.status(500).json({
+                ok: false,
+                msg: 'Por Favor hable con el administrador'
+            })
+        })
 }
 
 const getContenidosExperiencia = async (req = request, res = response) => {
-    try {
 
-        const IdExperiencia = req.params.IdExperiencia
-        await knex
-            .select('*')
-            .from('tblContenido')
-            .where('IdExperiencia', IdExperiencia)
-            .then(contenidos => {
+    const IdExperiencia = req.params.IdExperiencia
 
-                // LA EXPERIENCIA NO EXISTE O EN SU DEFECTO ESTA NO TIENE CONTENIDOS
-                if (contenidos.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: 'Experiencia no existe o no tiene contenidos'
-                    })
-                }
-
-                // SE ENCOTRO LOS CONTENIDOS DE LA EXPERIENCIA
-                return res.status(200).json(contenidos)
-            })
-
-    }
-    catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
+    await knex
+        .select('*')
+        .from('tblContenido')
+        .where('IdExperiencia', IdExperiencia)
+        .then(contenidos => {
+            return res.status(200).json(contenidos)
         })
-
-    }
+        .catch((error) => {
+            console.log(error)
+            res.status(500).json({
+                ok: false,
+                msg: 'Por Favor hable con el administrador'
+            })
+        })
 }
 
 const postContenido = async (req = request, res = response) => {
-    try {
 
-        const newContenido = req.body
-        await knex
-            .insert(newContenido)
-            .into("tblContenido")
-            .then(([contenido]) => {
+    const newContenido = req.body
 
-                // SE CREO EXITOSAMENTE EL CONTENIDO
-                return res.status(201).json({
-                    ok: true,
-                    msg: `Se creo el contenido con id ${contenido}`,
-                    id: contenido
-                })
-
+    await knex
+        .insert(newContenido)
+        .into("tblContenido")
+        .then(([id]) => {
+            return res.status(201).json({
+                ok: true,
+                msg: `Se creo el contenido con id ${id}`,
+                id
             })
-            .catch((error) => {
-
-                console.log(error)
-                res.status(400).json({
-                    ok: false,
-                    msg: 'No se pudo crear el contenido, Media o Experiencia no existe'
-                })
-
+        })
+        .catch((error) => {
+            console.log(error)
+            res.status(400).json({
+                ok: false,
+                msg: 'No se pudo crear el contenido, Media o Experiencia no existe'
             })
-
-    } catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
         })
 
-    }
 }
 
 const putContenido = async (req = request, res = response) => {
-    try {
 
-        const IdContenido = req.params.IdContenido
-        const contenido = req.body
+    const IdContenido = req.params.IdContenido
+    const contenido = req.body
 
-        await knex('tblContenido')
-            .where("IdContenido", IdContenido)
-            .update(contenido)
-            .then(r => {
-                if (!r) {
-
-                    // NO SE PUDO EDITAR EL CONTENIDO
-                    return res.status(400).json({
-                        ok: false,
-                        msg: `Contenido ${IdContenido} no existe`
-                    })
-
-                }
-
-                // SE EDITO EL CONTENIDO
-                return res.status(200).json({
-                    ok: true,
-                    msg: `Contenido ${IdContenido} editado`
-                })
-
-            })
-            .catch(e => {
-
-                res.status(400).json({
+    await knex('tblContenido')
+        .where("IdContenido", IdContenido)
+        .update(contenido)
+        .then(r => {
+            if (!r) {
+                // NO SE PUDO EDITAR EL CONTENIDO
+                return res.status(400).json({
                     ok: false,
-                    msg: 'Media no existe'
+                    msg: `Contenido ${IdContenido} no existe`
                 })
 
+            }
+
+            return res.status(200).json({
+                ok: true,
+                msg: `Contenido ${IdContenido} editado`
             })
 
-
-
-    }
-    catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
         })
-
-    }
+        .catch(error => {
+            res.status(400).json({
+                ok: false,
+                msg: 'Por Favor hable con el administrador'
+            })
+        })
 }
 
 const deleteContenido = async (req = request, res = response) => {
-    try {
-
-        const IdContenido = req.params.IdContenido
-        await knex('tblContenido')
-            .where("IdContenido", IdContenido)
-            .del()
-            .then(contenido => {
-
-                // EL CONTENIDO NO EXISTE
-                if (!contenido) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: `Contenido ${IdContenido} no existe`
-                    })
-                }
-
-                // EL CONTENIDO FUE ELIMINADO
-                return res.status(200).json({
-                    ok: true,
-                    msg: `Contenido ${IdContenido} eliminado`
+    const IdContenido = req.params.IdContenido
+    await knex('tblContenido')
+        .where("IdContenido", IdContenido)
+        .del()
+        .then(contenido => {
+            if (!contenido) {
+                return res.status(404).json({
+                    ok: false,
+                    msg: `Contenido ${IdContenido} no existe`
                 })
+            }
+            
+            return res.status(200).json({
+                ok: true,
+                msg: `Contenido ${IdContenido} eliminado`
             })
-
-
-    }
-    catch (error) {
-
-        console.log(error)
-        res.status(500).json({
-            ok: false,
-            msg: 'Por Favor hable con el administrador'
         })
-
-    }
+        .catch(e => {
+            res.status(400).json({
+                ok: false,
+                msg: 'Por Favor hable con el administrador'
+            })
+        })
 }
 
 module.exports = {
