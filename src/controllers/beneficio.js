@@ -60,13 +60,13 @@ const getBeneficiosCarrera = (req = request, res = response) => {
 }
 
 const postBeneficio = (req = request, res = response) => {
-
+                
     const newBeneficio = req.body
 
     knex
         .insert(newBeneficio)
         .into("tblBeneficio")
-        .then(([id]) => {
+        .then(([id]) => {   
             return res.status(201).json({
                 ok: true,
                 msg: `Se creo el beneficio con id ${id}`,

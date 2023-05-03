@@ -89,6 +89,8 @@ const loginUsuario = async (req = request, res = response) => {
             .select("*")
             .from("tblUsuario")
             .join('tblCoordinador', 'tblCoordinador.IdUsuario', '=', 'tblUsuario.IdUsuario')
+            .join('tblCarrera', 'tblCoordinador.IdCarrera', '=', 'tblCarrera.IdCarrera')
+            .join('tblSede','tblCarrera.IdSede', '=', 'tblSede.IdSede')
             .where('UsEmail', user)
             .then(r => r[0])
         if (!usuario) {
@@ -110,7 +112,10 @@ const loginUsuario = async (req = request, res = response) => {
 
         return res.json({
             ok: true,
-            carrera: usuario.IdCarrera,
+            idCarrera: usuario.IdCarrera,
+            carrera: usuario.CaNombre,
+            sede: usuario.SeNombre,
+            ciclos: usuario.CaCantidadCiclos
             // token
         })
 
