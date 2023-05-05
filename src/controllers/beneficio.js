@@ -70,7 +70,7 @@ const postBeneficio = (req = request, res = response) => {
             return res.status(201).json({
                 ok: true,
                 msg: `Se creo el beneficio con id ${id}`,
-                id
+                id  
             })
         })
         .catch(error => {
