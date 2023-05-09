@@ -1,7 +1,10 @@
 const { request, response } = require('express')
-const knex = require('../conexion')
+const connection = require('../conexion')
 
 const getBeneficios = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     knex
         .select('*')
         .from('tblBeneficio')
@@ -15,9 +18,14 @@ const getBeneficios = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getBeneficio = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdBeneficio = req.params.id
 
@@ -35,10 +43,15 @@ const getBeneficio = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 
 const getBeneficiosCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdCarrera = req.params.id
 
@@ -46,7 +59,7 @@ const getBeneficiosCarrera = (req = request, res = response) => {
         .select('*')
         .from('tblBeneficio')
         .where('IdCarrera', IdCarrera)
-        .then(beneficios => {   
+        .then(beneficios => {
             return res.status(200).json(beneficios)
         })
         .catch(error => {
@@ -56,21 +69,26 @@ const getBeneficiosCarrera = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const postBeneficio = (req = request, res = response) => {
-                
+
+    const knex = require('knex')(connection)
+
     const newBeneficio = req.body
 
     knex
         .insert(newBeneficio)
         .into("tblBeneficio")
-        .then(([id]) => {   
+        .then(([id]) => {
             return res.status(201).json({
                 ok: true,
                 msg: `Se creo el beneficio con id ${id}`,
-                id  
+                id
             })
         })
         .catch(error => {
@@ -80,10 +98,15 @@ const postBeneficio = (req = request, res = response) => {
                 msg: 'No se pudo crear el beneficio, Carrera no existe'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const putBeneficio = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdBeneficio = req.params.id
     const editBeneficio = req.body
@@ -110,10 +133,16 @@ const putBeneficio = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const deleteBeneficio = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     const IdBeneficio = req.params.id
 
     knex('tblBeneficio')
@@ -139,6 +168,9 @@ const deleteBeneficio = (req = request, res = response) => {
                 ok: false,
                 msg: 'Por Favor hable con el administrador'
             })
+        })
+        .finally(() => {
+            knex.destroy();
         })
 }
 

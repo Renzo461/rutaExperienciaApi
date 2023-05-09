@@ -3,7 +3,7 @@ const { getExperiencia, getExperiencias, postExperiencia, putExperiencia, delete
 
 const router = Router()
 
-router.get('/', getExperiencias)
+// router.get('/', getExperiencias)
 
 router.get('/:id', getExperiencia)
 

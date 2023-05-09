@@ -1,7 +1,10 @@
 const { request, response } = require('express')
-const knex = require('../conexion.js')
+const connection = require('../conexion')
 
 const getContenidos = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     await knex
         .select('*')
         .from('tblContenido')
@@ -15,9 +18,14 @@ const getContenidos = async (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getContenido = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdContenido = req.params.IdContenido
 
@@ -35,9 +43,14 @@ const getContenido = async (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getContenidosExperiencia = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.IdExperiencia
 
@@ -55,9 +68,14 @@ const getContenidosExperiencia = async (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const postContenido = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const newContenido = req.body
 
@@ -78,10 +96,15 @@ const postContenido = async (req = request, res = response) => {
                 msg: 'No se pudo crear el contenido, Media o Experiencia no existe'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const putContenido = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdContenido = req.params.IdContenido
     const contenido = req.body
@@ -111,10 +134,17 @@ const putContenido = async (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const deleteContenido = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     const IdContenido = req.params.IdContenido
+
     await knex('tblContenido')
         .where("IdContenido", IdContenido)
         .del()
@@ -125,7 +155,7 @@ const deleteContenido = async (req = request, res = response) => {
                     msg: `Contenido ${IdContenido} no existe`
                 })
             }
-            
+
             return res.status(200).json({
                 ok: true,
                 msg: `Contenido ${IdContenido} eliminado`
@@ -136,6 +166,9 @@ const deleteContenido = async (req = request, res = response) => {
                 ok: false,
                 msg: 'Por Favor hable con el administrador'
             })
+        })
+        .finally(() => {
+            knex.destroy();
         })
 }
 

@@ -1,7 +1,10 @@
 const { request, response } = require('express')
-const knex = require('../conexion')
+const connection = require('../conexion')
 
 const getCarreras = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     knex
         .select('*')
         .from('tblCarrera')
@@ -15,9 +18,14 @@ const getCarreras = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdCarrera = req.params.id
 
@@ -35,9 +43,14 @@ const getCarrera = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const postCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const newBeneficio = req.body
 
@@ -58,10 +71,15 @@ const postCarrera = (req = request, res = response) => {
                 msg: 'No se pudo crear el beneficio, Carrera no existe'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const putCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdBeneficio = req.params.id
     const editBeneficio = req.body
@@ -89,10 +107,15 @@ const putCarrera = (req = request, res = response) => {
                 msg: 'Por Favor hable con el administrador'
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 
 }
 
 const deleteCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdBeneficio = req.params.id
 
@@ -118,6 +141,9 @@ const deleteCarrera = (req = request, res = response) => {
                 ok: false,
                 msg: 'Por Favor hable con el administrador'
             })
+        })
+        .finally(() => {
+            knex.destroy();
         })
 }
 

@@ -1,14 +1,16 @@
 const { request, response } = require('express')
-const knex = require('../conexion.js')
+const connection = require('../conexion')
 
-const getExperiencias = async (req = request, res = response) => {
-    await knex
+const getExperiencias = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
+    knex
         .select('*')
         .from("tblExperiencia")
         .then(experiencias => {
             return res.status(200).json(experiencias)
         })
-
         .catch(error => {
             console.log(error)
             return res.status(500).json({
@@ -16,9 +18,14 @@ const getExperiencias = async (req = request, res = response) => {
                 msg: "Por Favor hable con el administrador"
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getExperiencia = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.id
 
@@ -36,11 +43,16 @@ const getExperiencia = async (req = request, res = response) => {
                 msg: "Por Favor hable con el administrador"
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const getExperienciasCarrera = async (req = request, res = response) => {
 
-    const IdCarrera = req.params.IdCarrera
+    const knex = require('knex')(connection)
+
+    const IdCarrera = req.params.IdCarrera    
 
     await knex
         .select("*")
@@ -55,11 +67,15 @@ const getExperienciasCarrera = async (req = request, res = response) => {
                 ok: false,
                 msg: "Por Favor hable con el administrador"
             })
-
+        })
+        .finally(() => {
+            knex.destroy();
         })
 }
 
 const postExperiencia = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const experiencia = req.body
 
@@ -79,10 +95,16 @@ const postExperiencia = async (req = request, res = response) => {
                 ok: false,
                 msg: "Por Favor hable con el administrador"
             })
-        });
+        })
+        .finally(() => {
+            knex.destroy();
+        })
+
 }
 
 const putExperiencia = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.id
     const experiencia = req.body
@@ -97,7 +119,7 @@ const putExperiencia = async (req = request, res = response) => {
                     msg: `No existe la experiencia ${IdExperiencia}`,
                 })
             }
-            
+
             return res.status(200).json({
                 ok: true,
                 msg: `Experiencia ${IdExperiencia} editada`,
@@ -110,9 +132,14 @@ const putExperiencia = async (req = request, res = response) => {
                 msg: "Por Favor hable con el administrador"
             })
         })
+        .finally(() => {
+            knex.destroy();
+        })
 }
 
 const deleteExperiencia = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.id
 
@@ -126,7 +153,7 @@ const deleteExperiencia = async (req = request, res = response) => {
                     msg: `Experiencia ${IdExperiencia} no existe`
                 })
             }
-        
+
             return res.status(200).json({
                 ok: true,
                 msg: `Experiencia ${IdExperiencia} eliminado`
@@ -138,6 +165,9 @@ const deleteExperiencia = async (req = request, res = response) => {
                 ok: false,
                 msg: "Por Favor hable con el administrador"
             })
+        })
+        .finally(() => {
+            knex.destroy();
         })
 }
 

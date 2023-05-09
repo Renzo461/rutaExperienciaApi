@@ -1,10 +1,14 @@
 const { response, request } = require('express')
-const knex = require('../conexion.js')
+const connection = require('../conexion')
+
 const bcrypt = require('bcryptjs')
 // const { generarJWT } = require('../helpers/jwt.js')
 
 const newUsuario = async (req = request, res = response) => {
-    const { UsDNI, IdCarrera, UsEmail } = req.body    
+
+    const knex = require('knex')(connection)
+
+    const { UsDNI, IdCarrera, UsEmail } = req.body
 
     const newUser = req.body
     delete newUser.IdCarrera
@@ -65,6 +69,7 @@ const newUsuario = async (req = request, res = response) => {
         const [IdCoordinador] = await knex
             .insert(newCoor)
             .into("tblCoordinador")
+        knex.destroy()
         return res.status(201).json({
             ok: true,
             msg: "coordinador creado",
@@ -82,52 +87,51 @@ const newUsuario = async (req = request, res = response) => {
 }
 
 const loginUsuario = async (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+
     const { user, password } = req.body
 
-    try {
-        const usuario = await knex
-            .select("*")
-            .from("tblUsuario")
-            .join('tblCoordinador', 'tblCoordinador.IdUsuario', '=', 'tblUsuario.IdUsuario')
-            .join('tblCarrera', 'tblCoordinador.IdCarrera', '=', 'tblCarrera.IdCarrera')
-            .join('tblSede','tblCarrera.IdSede', '=', 'tblSede.IdSede')
-            .where('UsEmail', user)
-            .then(r => r[0])
-        if (!usuario) {
-            return res.status(500).json({
-                ok: false,
-                msg: "El usuario no existe"
+    knex
+        .select("*")
+        .from("tblUsuario")
+        .join('tblCoordinador', 'tblCoordinador.IdUsuario', '=', 'tblUsuario.IdUsuario')
+        .join('tblCarrera', 'tblCoordinador.IdCarrera', '=', 'tblCarrera.IdCarrera')
+        .join('tblSede', 'tblCarrera.IdSede', '=', 'tblSede.IdSede')
+        .where('UsEmail', user)
+        .then(([usuario]) => {
+            if (!usuario) {
+                return res.status(500).json({
+                    ok: false,
+                    msg: "El usuario no existe"
+                })
+            }
+            const validPassword = bcrypt.compareSync(password, usuario.UsContrasena)
+            if (!validPassword) {
+                return res.status(500).json({
+                    ok: false,
+                    msg: "La contraseña no coincide"
+                })
+            }
+            return res.json({
+                ok: true,
+                idCarrera: usuario.IdCarrera,
+                carrera: usuario.CaNombre,
+                sede: usuario.SeNombre,
+                ciclos: usuario.CaCantidadCiclos
             })
-        }
-
-        const validPassword = bcrypt.compareSync(password, usuario.UsContrasena)
-        if (!validPassword) {
-            return res.status(500).json({
+        })
+        .catch(error => {
+            console.log(error)
+            res.status(500).json({
                 ok: false,
-                msg: "La contraseña no coincide"
+                msg: 'Por Favor hable con el administrador'
             })
-        }
-
-        // const token = await generarJWT(usuario.IdUsuario, usuario.UsEmail)
-
-        return res.json({
-            ok: true,
-            idCarrera: usuario.IdCarrera,
-            carrera: usuario.CaNombre,
-            sede: usuario.SeNombre,
-            ciclos: usuario.CaCantidadCiclos
-            // token
+        })
+        .finally(() => {
+            knex.destroy();
         })
 
-    }
-    catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            ok: false,
-            msg: "Por Favor hable con el administrador"
-        })
-
-    }
 }
 
 module.exports = {

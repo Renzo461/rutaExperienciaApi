@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "forever start ./src/main.js"
+    "start": "forever start ./src/main.js",
+    "dev": "nodemon ./src/main.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.0",
     "knex": "^2.4.2",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "mysql2": "^3.3.0"
   }
 }

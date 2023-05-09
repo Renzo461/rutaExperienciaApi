@@ -7,7 +7,7 @@ const connection = {
     //     password: '',
     //     database: 'rutaexperiencia',
     // }
-    client: 'mysql',
+    client: 'mysql2',
     connection: {
         host: '144.22.59.87',
         port: 3306,
@@ -17,5 +17,5 @@ const connection = {
     }
 }
 
-const knex = require('knex')(connection)
-module.exports = knex
+
+module.exports = connection
