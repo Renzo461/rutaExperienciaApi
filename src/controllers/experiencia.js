@@ -48,17 +48,15 @@ const getExperiencia = async (req = request, res = response) => {
         })
 }
 
-const getExperienciasCarrera = async (req = request, res = response) => {
+const getExperienciasCarrera = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
-    const IdCarrera = req.params.IdCarrera    
+    const IdCarrera = req.params.IdCarrera
 
-    await knex
-        .select("*")
-        .from("tblExperiencia")
-        .where("IdCarrera", IdCarrera)
-        .then(experiencias => {
+    knex
+        .raw('CALL get_experiencias_carrera(?)', [IdCarrera])
+        .then(([[experiencias]]) => {
             return res.status(200).json(experiencias)
         })
         .catch(error => {
@@ -77,15 +75,25 @@ const postExperiencia = async (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
-    const experiencia = req.body
+    const nuevaExperiencia = [
+        req.body.ExNombre,
+        req.body.ExCicloInicio,
+        req.body.ExCicloFin,
+        req.body.ExFila,
+        req.body.ExIconoUrl,
+        req.body.IdCarrera,
+    ]
 
-    await knex
-        .insert(experiencia)
-        .into("tblExperiencia")
-        .then(([id]) => {
+    knex
+        .raw('CALL post_experiencia(?,?,?,?,?,?,@ex_id)', nuevaExperiencia)
+        .then(() => {
+            return knex.select(knex.raw('@ex_id'))
+        })
+        .then(([result]) => {
+            const id = result['@ex_id'];
             return res.status(201).json({
                 ok: true,
-                msg: `Experiencia ${id} creada exitosamente`,
+                msg: `Experiencia creada exitosamente`,
                 id
             });
         })
@@ -102,28 +110,35 @@ const postExperiencia = async (req = request, res = response) => {
 
 }
 
-const putExperiencia = async (req = request, res = response) => {
+const putExperiencia = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.id
-    const experiencia = req.body
 
-    await knex('tblExperiencia')
-        .where("IdExperiencia", IdExperiencia)
-        .update(experiencia)
-        .then(r => {
-            if (!r) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: `No existe la experiencia ${IdExperiencia}`,
+    const nuevaExperiencia = [
+        IdExperiencia,
+        req.body.ExNombre,
+        req.body.ExCicloInicio,
+        req.body.ExCicloFin,
+        req.body.ExFila,
+        req.body.ExIconoUrl,
+    ]
+
+    knex
+        .raw('CALL put_experiencia(?,?,?,?,?,?)', nuevaExperiencia)
+        .then(([[r]]) => {
+            if (r.length) {
+                return res.status(200).json({
+                    ok: true,
+                    msg: `Experiencia ${IdExperiencia} editada`,
                 })
             }
-
-            return res.status(200).json({
-                ok: true,
-                msg: `Experiencia ${IdExperiencia} editada`,
+            return res.status(404).json({
+                ok: false,
+                msg: `No existe la experiencia ${IdExperiencia}`,
             })
+
         })
         .catch(error => {
             console.log(error)

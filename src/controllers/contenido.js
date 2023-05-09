@@ -1,11 +1,12 @@
 const { request, response } = require('express')
 const connection = require('../conexion')
+const { error } = require('console')
 
-const getContenidos = async (req = request, res = response) => {
+const getContenidos = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
-    await knex
+    knex
         .select('*')
         .from('tblContenido')
         .then(contenidos => {
@@ -23,13 +24,13 @@ const getContenidos = async (req = request, res = response) => {
         })
 }
 
-const getContenido = async (req = request, res = response) => {
+const getContenido = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
     const IdContenido = req.params.IdContenido
 
-    await knex
+    knex
         .select('*')
         .from('tblContenido')
         .where('IdContenido', IdContenido)
@@ -48,17 +49,15 @@ const getContenido = async (req = request, res = response) => {
         })
 }
 
-const getContenidosExperiencia = async (req = request, res = response) => {
+const getContenidosExperiencia = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
     const IdExperiencia = req.params.IdExperiencia
 
-    await knex
-        .select('*')
-        .from('tblContenido')
-        .where('IdExperiencia', IdExperiencia)
-        .then(contenidos => {
+    knex
+        .raw('CALL get_contenidos_experiencia(?)', [IdExperiencia])
+        .then(([[contenidos]]) => {
             return res.status(200).json(contenidos)
         })
         .catch((error) => {
@@ -73,20 +72,24 @@ const getContenidosExperiencia = async (req = request, res = response) => {
         })
 }
 
-const postContenido = async (req = request, res = response) => {
+const postContenido = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
-    const newContenido = req.body
+    const nuevoContenido = [
+        req.body.CoTitulo,
+        req.body.CoDescripcion,
+        req.body.CoUrlMedia,
+        req.body.IdTipoMedia,
+        req.body.IdExperiencia
+    ]
 
-    await knex
-        .insert(newContenido)
-        .into("tblContenido")
-        .then(([id]) => {
+    knex
+        .raw('CALL post_contenido(?,?,?,?,?)', nuevoContenido)
+        .then(_ => {
             return res.status(201).json({
                 ok: true,
-                msg: `Se creo el contenido con id ${id}`,
-                id
+                msg: `Se creo el contenido`
             })
         })
         .catch((error) => {
@@ -99,37 +102,39 @@ const postContenido = async (req = request, res = response) => {
         .finally(() => {
             knex.destroy();
         })
-
 }
 
-const putContenido = async (req = request, res = response) => {
+const putContenido = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
 
     const IdContenido = req.params.IdContenido
-    const contenido = req.body
+    const editarContenido = [
+        IdContenido,
+        req.body.CoTitulo,
+        req.body.CoDescripcion,
+        req.body.CoUrlMedia,
+        req.body.IdTipoMedia,
+    ]
 
-    await knex('tblContenido')
-        .where("IdContenido", IdContenido)
-        .update(contenido)
-        .then(r => {
-            if (!r) {
-                // NO SE PUDO EDITAR EL CONTENIDO
-                return res.status(400).json({
-                    ok: false,
-                    msg: `Contenido ${IdContenido} no existe`
+    knex
+        .raw('CALL put_contenido(?,?,?,?,?)', editarContenido)
+        .then(([[r]]) => {
+            if (r.length) {
+                return res.status(200).json({
+                    ok: true,
+                    msg: `Contenido ${IdContenido} editado`
                 })
 
             }
-
-            return res.status(200).json({
-                ok: true,
-                msg: `Contenido ${IdContenido} editado`
+            return res.status(404).json({
+                ok: false,
+                msg: `Contenido ${IdContenido} no existe`
             })
-
         })
         .catch(error => {
-            res.status(400).json({
+            console.log(error)
+            res.status(500).json({
                 ok: false,
                 msg: 'Por Favor hable con el administrador'
             })
@@ -161,7 +166,8 @@ const deleteContenido = async (req = request, res = response) => {
                 msg: `Contenido ${IdContenido} eliminado`
             })
         })
-        .catch(e => {
+        .catch(error => {
+            console.log(error)
             res.status(400).json({
                 ok: false,
                 msg: 'Por Favor hable con el administrador'
