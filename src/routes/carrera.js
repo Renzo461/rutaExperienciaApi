@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { getCarreras, getCarrera, postCarrera, putCarrera, deleteCarrera } = require('../controllers/carrera')
+const { getCarreras, getCarrera, postCarrera, putCarrera, deleteCarrera, getCarrerasSede } = require('../controllers/carrera')
 
 const router = Router()
 
@@ -7,10 +7,12 @@ router.get('/', getCarreras)
 
 router.get('/:id', getCarrera)
 
-// router.post('/', postCarrera)
+router.get('/sede/:id', getCarrerasSede)
 
-// router.put('/:id', putCarrera)
+router.post('/', postCarrera)
 
-// router.delete('/:id', deleteCarrera)
+router.put('/:id', putCarrera)
+
+router.delete('/:id', deleteCarrera)
 
 module.exports = router

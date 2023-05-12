@@ -6,16 +6,37 @@ const getCarreras = (req = request, res = response) => {
     const knex = require('knex')(connection)
 
     knex
-        .select('*')
-        .from('tblCarrera')
-        .then(carreras => {
-            return res.status(200).json(carreras)
+    .raw('CALL get_carreras()')
+    .then(([[carreras]]) => {
+        return res.status(200).json(carreras)
+    })
+    .catch((error) => {
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            msg: "Por Favor hable con el administrador"
+        })
+    })
+    .finally(() => {
+        knex.destroy();
+    })
+}
+
+const getCarrera = (req = request, res = response) => {
+
+    const knex = require('knex')(connection)
+    const idCarrera = req.params.id
+
+    knex
+        .raw('CALL get_carrera(?)', [idCarrera])
+        .then(([[[carrera]]]) => {
+            return res.status(200).json(carrera)
         })
         .catch((error) => {
             console.log(error)
-            res.status(500).json({
+            return res.status(500).json({
                 ok: false,
-                msg: 'Por Favor hable con el administrador'
+                msg: "Por Favor hable con el administrador"
             })
         })
         .finally(() => {
@@ -23,24 +44,22 @@ const getCarreras = (req = request, res = response) => {
         })
 }
 
-const getCarrera = (req = request, res = response) => {
+const getCarrerasSede = (req = request, res = response) => {
 
     const knex = require('knex')(connection)
+    const idSede = req.params.id
 
-    const IdCarrera = req.params.id
 
     knex
-        .select('*')
-        .from('tblCarrera')
-        .where('IdCarrera', IdCarrera)
-        .then(([carrera]) => {
-            return res.status(200).json(carrera)
+        .raw('CALL get_carreras_sede(?)', [idSede])
+        .then(([[carreras]]) => {
+            return res.status(200).json(carreras)
         })
         .catch((error) => {
             console.log(error)
-            res.status(500).json({
+            return res.status(500).json({
                 ok: false,
-                msg: 'Por Favor hable con el administrador'
+                msg: "Por Favor hable con el administrador"
             })
         })
         .finally(() => {
@@ -50,106 +69,28 @@ const getCarrera = (req = request, res = response) => {
 
 const postCarrera = (req = request, res = response) => {
 
-    const knex = require('knex')(connection)
-
-    const newBeneficio = req.body
-
-    knex
-        .insert(newBeneficio)
-        .into("tblCarrera")
-        .then(([beneficio]) => {
-            return res.status(201).json({
-                ok: true,
-                msg: `Se creo el beneficio con id ${beneficio}`,
-                id: beneficio
-            })
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(400).json({
-                ok: false,
-                msg: 'No se pudo crear el beneficio, Carrera no existe'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
+    return res.status(200).json(`postCarrera`)
 
 }
 
 const putCarrera = (req = request, res = response) => {
 
-    const knex = require('knex')(connection)
+    const idCarrera = req.params.id
 
-    const IdBeneficio = req.params.id
-    const editBeneficio = req.body
-
-    knex('beneficio')
-        .where("IdBeneficio", IdBeneficio)
-        .update(editBeneficio)
-        .then((beneficio) => {
-            if (!beneficio) {
-                return res.status(400).json({
-                    ok: false,
-                    msg: `Beneficio ${IdBeneficio} no existe`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                msg: `Beneficio ${IdBeneficio} editado`
-            })
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(400).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-
+    return res.status(200).json(`putCarrera ${idCarrera}`)
 }
 
 const deleteCarrera = (req = request, res = response) => {
 
-    const knex = require('knex')(connection)
+    const idCarrera = req.params.id
 
-    const IdBeneficio = req.params.id
-
-    knex('beneficio')
-        .where("IdBeneficio", IdBeneficio)
-        .del()
-        .then((beneficio) => {
-            if (!beneficio) {
-                return res.status(400).json({
-                    ok: false,
-                    msg: `Beneficio ${IdBeneficio} no existe`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                msg: `Beneficio ${IdBeneficio} eliminado`
-            })
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(400).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
+    return res.status(200).json(`deleteCarrera ${idCarrera}`)
 }
 
 module.exports = {
     getCarreras,
     getCarrera,
+    getCarrerasSede,
     postCarrera,
     putCarrera,
     deleteCarrera

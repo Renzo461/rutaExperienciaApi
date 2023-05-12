@@ -1,6 +1,5 @@
 const { request, response } = require('express')
 const connection = require('../conexion')
-const { error } = require('console')
 
 const getContenidos = (req = request, res = response) => {
 
