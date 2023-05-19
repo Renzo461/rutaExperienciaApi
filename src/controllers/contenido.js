@@ -1,187 +1,190 @@
-const { request, response } = require('express')
-const connection = require('../conexion')
+const { request, response } = require("express");
+const connection = require("../conexion");
 
-const getContenidos = (req = request, res = response) => {
+// const getContenidos = (req = request, res = response) => {
+//   const knex = require("knex")(connection);
 
-    const knex = require('knex')(connection)
+//   knex
+//     .select("*")
+//     .from("tblContenido")
+//     .then((contenidos) => {
+//       return res.status(200).json(contenidos);
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       res.status(500).json({
+//         ok: false,
+//         msg: "Por Favor hable con el administrador",
+//       });
+//     })
+//     .finally(() => {
+//       knex.destroy();
+//     });
+// };
 
-    knex
-        .select('*')
-        .from('tblContenido')
-        .then(contenidos => {
-            return res.status(200).json(contenidos)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+// const getContenido = (req = request, res = response) => {
+//   const knex = require("knex")(connection);
 
-const getContenido = (req = request, res = response) => {
+//   const IdContenido = req.params.IdContenido;
 
-    const knex = require('knex')(connection)
-
-    const IdContenido = req.params.IdContenido
-
-    knex
-        .select('*')
-        .from('tblContenido')
-        .where('IdContenido', IdContenido)
-        .then(([contenido]) => {
-            return res.status(200).json(contenido)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+//   knex
+//     .select("*")
+//     .from("tblContenido")
+//     .where("IdContenido", IdContenido)
+//     .then(([contenido]) => {
+//       return res.status(200).json(contenido);
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       res.status(500).json({
+//         ok: false,
+//         msg: "Por Favor hable con el administrador",
+//       });
+//     })
+//     .finally(() => {
+//       knex.destroy();
+//     });
+// };
 
 const getContenidosExperiencia = (req = request, res = response) => {
+  const knex = require("knex")(connection);
 
-    const knex = require('knex')(connection)
+  const IdExperiencia = req.params.IdExperiencia;
 
-    const IdExperiencia = req.params.IdExperiencia
-
-    knex
-        .raw('CALL get_contenidos_experiencia(?)', [IdExperiencia])
-        .then(([[contenidos]]) => {
-            return res.status(200).json(contenidos)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+  knex
+    .raw("CALL get_contenidos_experiencia(?)", [IdExperiencia])
+    .then(([[contenidos]]) => {
+      return res.status(200).json(contenidos);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        ok: false,
+        msg: "Por Favor hable con el administrador",
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 const postContenido = (req = request, res = response) => {
+  const knex = require("knex")(connection);
 
-    const knex = require('knex')(connection)
+  const nuevoContenido = [
+    req.body.CoTitulo,
+    req.body.CoDescripcion,
+    req.body.CoUrlMedia,
+    req.body.IdTipoMedia,
+    req.body.IdExperiencia,
+  ];
 
-    const nuevoContenido = [
-        req.body.CoTitulo,
-        req.body.CoDescripcion,
-        req.body.CoUrlMedia,
-        req.body.IdTipoMedia,
-        req.body.IdExperiencia
-    ]
-
-    knex
-        .raw('CALL post_contenido(?,?,?,?,?)', nuevoContenido)
-        .then(_ => {
-            return res.status(201).json({
-                ok: true,
-                msg: `Se creo el contenido`
-            })
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(400).json({
-                ok: false,
-                msg: 'No se pudo crear el contenido, Media o Experiencia no existe'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+  knex
+    .raw("CALL post_contenido(?,?,?,?,?,@resultado)", nuevoContenido)
+    .then(() => {
+      return knex.raw("SELECT @resultado");
+    })
+    .then(([[codigo]]) => {
+      respuesta = codigo["@resultado"];
+      if (respuesta === 400) {
+        throw new Error("Experiencia no existe");
+      }
+      if (respuesta === 401) {
+        throw new Error("Media no existe");
+      }
+      return res.status(201).json({
+        ok: true,
+        msg: `Se creo el contenido`,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).json({
+        ok: false,
+        msg: "No se pudo crear el contenido, Media o Experiencia no existe",
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 const putContenido = (req = request, res = response) => {
+  const knex = require("knex")(connection);
 
-    const knex = require('knex')(connection)
+  const IdContenido = req.params.IdContenido;
+  const editarContenido = [
+    IdContenido,
+    req.body.CoTitulo,
+    req.body.CoDescripcion,
+    req.body.CoUrlMedia,
+    req.body.IdTipoMedia,
+  ];
 
-    const IdContenido = req.params.IdContenido
-    const editarContenido = [
-        IdContenido,
-        req.body.CoTitulo,
-        req.body.CoDescripcion,
-        req.body.CoUrlMedia,
-        req.body.IdTipoMedia,
-    ]
+  knex
+    .raw("CALL put_contenido(?,?,?,?,?)", editarContenido)
+    .then(([[r]]) => {
+      if (r.length) {
+        return res.status(200).json({
+          ok: true,
+          msg: `Contenido ${IdContenido} editado`,
+        });
+      }
+      return res.status(404).json({
+        ok: false,
+        msg: `Contenido ${IdContenido} no existe`,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        ok: false,
+        msg: "Por Favor hable con el administrador",
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
-    knex
-        .raw('CALL put_contenido(?,?,?,?,?)', editarContenido)
-        .then(([[r]]) => {
-            if (r.length) {
-                return res.status(200).json({
-                    ok: true,
-                    msg: `Contenido ${IdContenido} editado`
-                })
+// const deleteContenido = async (req = request, res = response) => {
+//   const knex = require("knex")(connection);
 
-            }
-            return res.status(404).json({
-                ok: false,
-                msg: `Contenido ${IdContenido} no existe`
-            })
-        })
-        .catch(error => {
-            console.log(error)
-            res.status(500).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+//   const IdContenido = req.params.IdContenido;
 
-const deleteContenido = async (req = request, res = response) => {
+//   await knex("tblContenido")
+//     .where("IdContenido", IdContenido)
+//     .del()
+//     .then((contenido) => {
+//       if (!contenido) {
+//         return res.status(404).json({
+//           ok: false,
+//           msg: `Contenido ${IdContenido} no existe`,
+//         });
+//       }
 
-    const knex = require('knex')(connection)
-
-    const IdContenido = req.params.IdContenido
-
-    await knex('tblContenido')
-        .where("IdContenido", IdContenido)
-        .del()
-        .then(contenido => {
-            if (!contenido) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: `Contenido ${IdContenido} no existe`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                msg: `Contenido ${IdContenido} eliminado`
-            })
-        })
-        .catch(error => {
-            console.log(error)
-            res.status(400).json({
-                ok: false,
-                msg: 'Por Favor hable con el administrador'
-            })
-        })
-        .finally(() => {
-            knex.destroy();
-        })
-}
+//       return res.status(200).json({
+//         ok: true,
+//         msg: `Contenido ${IdContenido} eliminado`,
+//       });
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       res.status(400).json({
+//         ok: false,
+//         msg: "Por Favor hable con el administrador",
+//       });
+//     })
+//     .finally(() => {
+//       knex.destroy();
+//     });
+// };
 
 module.exports = {
-    getContenidos,
-    getContenido,
-    getContenidosExperiencia,
-    postContenido,
-    putContenido,
-    deleteContenido
-}
+  // getContenidos,
+  // getContenido,
+  getContenidosExperiencia,
+  postContenido,
+  putContenido,
+  // deleteContenido,
+};

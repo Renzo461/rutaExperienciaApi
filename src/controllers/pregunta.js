@@ -1,58 +1,52 @@
-const { request, response } = require('express')
-const connection = require('../conexion')
-const { default: knex } = require('knex')
+const { request, response } = require("express");
+const connection = require("../conexion");
 
 const getPreguntas = (req = request, res = response) => {
-    const knex = require('knex')(connection)
+  const knex = require("knex")(connection);
 
-    return res.status(200).json('preguntas')
-    // knex
-    //     .raw('CALL ()')
-    //     .then(([[preguntas]]) => {
-    //         return res.status(200).json(preguntas)
-    //     })
-    //     .catch((error) => {
-    //         console.log(error)
-    //         return res.status(500).json({
-    //             ok: false,
-    //             msg: "Por Favor hable con el administrador"
-    //         })
-    //     })
-    //     .finally(() => {
-    //         knex.destroy();
-    //     })
+  knex
+    .raw("CALL get_preguntas_frecuentes()")
+    .then(([[preguntas]]) => {
+      return res.status(200).json(preguntas);
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json({
+        ok: false,
+        msg: "Por Favor hable con el administrador",
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
-}
+// const getPregunta = (req = request, res = response) => {
+//   const idPregunta = req.params.id;
 
-const getPregunta = (req = request, res = response) => {
+//   return res.status(200).json(`pregunta ${idPregunta}`);
+// };
 
-    const idPregunta = req.params.id
+// const postPregunta = (req = request, res = response) => {
+//   return res.status(200).json(`postPregunta`);
+// };
 
-    return res.status(200).json(`pregunta ${idPregunta}`)
-}
+// const putPregunta = (req = request, res = response) => {
+//   const idPregunta = req.params.id;
 
-const postPregunta = (req = request, res = response) => {
-    return res.status(200).json(`postPregunta`)
-}
+//   return res.status(200).json(`putPregunta ${idPregunta}`);
+// };
 
-const putPregunta = (req = request, res = response) => {
+// const deletePregunta = (req = request, res = response) => {
+//   const idPregunta = req.params.id;
 
-    const idPregunta = req.params.id
-
-    return res.status(200).json(`putPregunta ${idPregunta}`)
-}
-
-const deletePregunta = (req = request, res = response) => {
-
-    const idPregunta = req.params.id
-
-    return res.status(200).json(`deletePregunta ${idPregunta}`)
-}
+//   return res.status(200).json(`deletePregunta ${idPregunta}`);
+// };
 
 module.exports = {
-    getPreguntas,
-    getPregunta,
-    postPregunta,
-    putPregunta,
-    deletePregunta
-}
+  getPreguntas,
+  //   getPregunta,
+  //   postPregunta,
+  //   putPregunta,
+  //   deletePregunta,
+};

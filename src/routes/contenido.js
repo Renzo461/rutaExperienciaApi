@@ -1,19 +1,25 @@
-const { Router } = require('express')
-const { getContenidos, getContenido, getContenidosExperiencia, postContenido, putContenido, deleteContenido } = require('../controllers/contenido')
+const { Router } = require("express");
+const {
+//   getContenidos,
+//   getContenido,
+  getContenidosExperiencia,
+  postContenido,
+  putContenido,
+//   deleteContenido,
+} = require("../controllers/contenido");
 
-const router = Router()
+const router = Router();
 
-router.get('/', getContenidos)
+// router.get('/', getContenidos)
 
-router.get('/:IdContenido', getContenido)
+// router.get("/:IdContenido", getContenido);
 
-router.get('/experiencia/:IdExperiencia', getContenidosExperiencia)
+router.get("/experiencia/:IdExperiencia", getContenidosExperiencia);
 
-router.post('/', postContenido)
+router.post("/", postContenido);
 
-router.put('/:IdContenido', putContenido)
+router.put("/:IdContenido", putContenido);
 
-router.delete('/:IdContenido', deleteContenido)
+// router.delete("/:IdContenido", deleteContenido);
 
-module.exports = router
-
+module.exports = router;
