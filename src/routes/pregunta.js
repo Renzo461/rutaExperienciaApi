@@ -1,15 +1,15 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
   getPreguntas,
   //   getPregunta,
   //   postPregunta,
   //   putPregunta,
   //   deletePregunta,
-} = require("../controllers/pregunta");
+} = require('../controllers/pregunta');
 
 const router = Router();
 
-router.get("/", getPreguntas);
+router.get('/', getPreguntas);
 
 // router.get("/:id", getPregunta);
 

@@ -1,8 +1,8 @@
-const { Router } = require("express");
-const { postCalificacion } = require("../controllers/calificacion");
+const { Router } = require('express');
+const { postCalificacion } = require('../controllers/calificacion');
 
 const router = Router();
 
-router.post("/", postCalificacion);
+router.post('/', postCalificacion);
 
 module.exports = router;

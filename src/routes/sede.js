@@ -1,15 +1,15 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
   getSedes,
   //   getSede,
   //   postSede,
   //   putSede,
   //   deleteSede,
-} = require("../controllers/sede");
+} = require('../controllers/sede');
 
 const router = Router();
 
-router.get("/", getSedes);
+router.get('/', getSedes);
 
 // router.get("/:id", getSede);
 

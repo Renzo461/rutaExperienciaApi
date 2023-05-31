@@ -1,5 +1,5 @@
-const { request, response } = require("express");
-const connection = require("../conexion");
+const { request, response } = require('express');
+const connection = require('../conexion');
 
 // const getContenidos = (req = request, res = response) => {
 //   const knex = require("knex")(connection);
@@ -47,20 +47,18 @@ const connection = require("../conexion");
 // };
 
 const getContenidosExperiencia = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
-  const IdExperiencia = req.params.IdExperiencia;
+  const { IdExperiencia } = req.params;
 
   knex
-    .raw("CALL get_contenidos_experiencia(?)", [IdExperiencia])
-    .then(([[contenidos]]) => {
-      return res.status(200).json(contenidos);
-    })
+    .raw('CALL get_contenidos_experiencia(?)', [IdExperiencia])
+    .then(([[contenidos]]) => res.status(200).json(contenidos))
     .catch((error) => {
       console.log(error);
       res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {
@@ -69,7 +67,7 @@ const getContenidosExperiencia = (req = request, res = response) => {
 };
 
 const postContenido = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   const nuevoContenido = [
     req.body.CoTitulo,
@@ -80,17 +78,15 @@ const postContenido = (req = request, res = response) => {
   ];
 
   knex
-    .raw("CALL post_contenido(?,?,?,?,?,@resultado)", nuevoContenido)
-    .then(() => {
-      return knex.raw("SELECT @resultado");
-    })
+    .raw('CALL post_contenido(?,?,?,?,?,@resultado)', nuevoContenido)
+    .then(() => knex.raw('SELECT @resultado'))
     .then(([[codigo]]) => {
-      respuesta = codigo["@resultado"];
+      const respuesta = codigo['@resultado'];
       if (respuesta === 400) {
-        throw new Error("Experiencia no existe");
+        throw new Error('Experiencia no existe');
       }
       if (respuesta === 401) {
-        throw new Error("Media no existe");
+        throw new Error('Media no existe');
       }
       return res.status(201).json({
         ok: true,
@@ -99,9 +95,10 @@ const postContenido = (req = request, res = response) => {
     })
     .catch((error) => {
       console.log(error);
-      res.status(400).json({
+      res.status(500).json({
         ok: false,
-        msg: "No se pudo crear el contenido, Media o Experiencia no existe",
+        msg: 'No se pudo crear el contenido, Media o Experiencia no existe',
+        info: error.message,
       });
     })
     .finally(() => {
@@ -110,9 +107,9 @@ const postContenido = (req = request, res = response) => {
 };
 
 const putContenido = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
-  const IdContenido = req.params.IdContenido;
+  const { IdContenido } = req.params;
   const editarContenido = [
     IdContenido,
     req.body.CoTitulo,
@@ -122,24 +119,27 @@ const putContenido = (req = request, res = response) => {
   ];
 
   knex
-    .raw("CALL put_contenido(?,?,?,?,?)", editarContenido)
-    .then(([[r]]) => {
-      if (r.length) {
-        return res.status(200).json({
-          ok: true,
-          msg: `Contenido ${IdContenido} editado`,
-        });
+    .raw('CALL put_contenido(?,?,?,?,?,@resultado)', editarContenido)
+    .then(() => knex.raw('SELECT @resultado'))
+    .then(([[codigo]]) => {
+      const respuesta = codigo['@resultado'];
+      if (respuesta === 400) {
+        throw new Error('Contenido no existe');
       }
-      return res.status(404).json({
-        ok: false,
-        msg: `Contenido ${IdContenido} no existe`,
+      if (respuesta === 401) {
+        throw new Error('Media no existe');
+      }
+      return res.status(200).json({
+        ok: true,
+        msg: `Contenido ${IdContenido} editado`,
       });
     })
     .catch((error) => {
       console.log(error);
       res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
       });
     })
     .finally(() => {

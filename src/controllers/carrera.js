@@ -1,19 +1,17 @@
-const { request, response } = require("express");
-const connection = require("../conexion");
+const { request, response } = require('express');
+const connection = require('../conexion');
 
-const getCarreras = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+const getCarreras = (_, res = response) => {
+  const knex = require('knex')(connection);
 
   knex
-    .raw("CALL get_carreras()")
-    .then(([[carreras]]) => {
-      return res.status(200).json(carreras);
-    })
+    .raw('CALL get_carreras()')
+    .then(([[carreras]]) => res.status(200).json(carreras))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {
@@ -22,19 +20,17 @@ const getCarreras = (req = request, res = response) => {
 };
 
 const getCarrera = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
   const idCarrera = req.params.id;
 
   knex
-    .raw("CALL get_carrera(?)", [idCarrera])
-    .then(([[[carrera]]]) => {
-      return res.status(200).json(carrera);
-    })
+    .raw('CALL get_carrera(?)', [idCarrera])
+    .then(([[[carrera]]]) => res.status(200).json(carrera))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {
@@ -43,19 +39,17 @@ const getCarrera = (req = request, res = response) => {
 };
 
 const getCarrerasSede = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
   const idSede = req.params.id;
 
   knex
-    .raw("CALL get_carreras_sede(?)", [idSede])
-    .then(([[carreras]]) => {
-      return res.status(200).json(carreras);
-    })
+    .raw('CALL get_carreras_sede(?)', [idSede])
+    .then(([[carreras]]) => res.status(200).json(carreras))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {

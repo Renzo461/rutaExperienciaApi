@@ -1,19 +1,17 @@
-const { request, response } = require("express");
-const connection = require("../conexion");
+const { request, response } = require('express');
+const connection = require('../conexion');
 
 const getPreguntas = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   knex
-    .raw("CALL get_preguntas_frecuentes()")
-    .then(([[preguntas]]) => {
-      return res.status(200).json(preguntas);
-    })
+    .raw('CALL get_preguntas_frecuentes()')
+    .then(([[preguntas]]) => res.status(200).json(preguntas))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {

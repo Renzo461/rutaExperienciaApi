@@ -1,5 +1,5 @@
-const { request, response } = require("express");
-const connection = require("../conexion");
+const { request, response } = require('express');
+const connection = require('../conexion');
 
 // const getExperiencias = (req = request, res = response) => {
 //   const knex = require("knex")(connection);
@@ -47,20 +47,18 @@ const connection = require("../conexion");
 // };
 
 const getExperienciasCarrera = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
-  const IdCarrera = req.params.IdCarrera;
+  const { IdCarrera } = req.params;
 
   knex
-    .raw("CALL get_experiencias_carrera(?)", [IdCarrera])
-    .then(([[experiencias]]) => {
-      return res.status(200).json(experiencias);
-    })
+    .raw('CALL get_experiencias_carrera(?)', [IdCarrera])
+    .then(([[experiencias]]) => res.status(200).json(experiencias))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {
@@ -69,7 +67,7 @@ const getExperienciasCarrera = (req = request, res = response) => {
 };
 
 const postExperiencia = async (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   const nuevaExperiencia = [
     req.body.ExNombre,
@@ -82,29 +80,34 @@ const postExperiencia = async (req = request, res = response) => {
 
   knex
     .raw(
-      "CALL post_experiencia(?,?,?,?,?,?,@ex_id,@resultado)",
+      'CALL post_experiencia(?,?,?,?,?,?,@ex_id,@resultado)',
       nuevaExperiencia
     )
-    .then(() => {
-      return knex.raw("SELECT @ex_id, @resultado");
-    })
+    .then(() => knex.raw('SELECT @ex_id, @resultado'))
     .then(([[result]]) => {
-      const ex_id = result["@ex_id"];
-      const resultado = result["@resultado"];
+      const id = result['@ex_id'];
+      const resultado = result['@resultado'];
       if (resultado === 400) {
-        throw new Error("IdCarrera no encontrado");
+        throw new Error('Posicion de ciclos incorrecto');
+      }
+      if (resultado === 401) {
+        throw new Error('Fila incorrecta');
+      }
+      if (resultado === 402) {
+        throw new Error('IdCarrera no encontrado');
       }
       return res.status(201).json({
         ok: true,
         msg: `Experiencia creada exitosamente`,
-        ex_id: ex_id,
+        id,
       });
     })
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
       });
     })
     .finally(() => {
@@ -113,7 +116,7 @@ const postExperiencia = async (req = request, res = response) => {
 };
 
 const putExperiencia = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   const IdExperiencia = req.params.id;
 
@@ -127,24 +130,30 @@ const putExperiencia = (req = request, res = response) => {
   ];
 
   knex
-    .raw("CALL put_experiencia(?,?,?,?,?,?)", nuevaExperiencia)
-    .then(([[r]]) => {
-      if (r.length) {
-        return res.status(200).json({
-          ok: true,
-          msg: `Experiencia ${IdExperiencia} editada`,
-        });
+    .raw('CALL put_experiencia(?,?,?,?,?,?,@resultado)', nuevaExperiencia)
+    .then(() => knex.raw('SELECT @resultado'))
+    .then(([[result]]) => {
+      const resultado = result['@resultado'];
+      if (resultado === 400) {
+        throw new Error('Experiencia no existe');
       }
-      return res.status(404).json({
-        ok: false,
-        msg: `No existe la experiencia ${IdExperiencia}`,
+      if (resultado === 401) {
+        throw new Error('Posición ciclos incorrecto');
+      }
+      if (resultado === 402) {
+        throw new Error('Fila incorrecta');
+      }
+      return res.status(200).json({
+        ok: true,
+        msg: `Experiencia ${IdExperiencia} editada`,
       });
     })
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
       });
     })
     .finally(() => {

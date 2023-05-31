@@ -1,12 +1,12 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
-//   getContenidos,
-//   getContenido,
+  //   getContenidos,
+  //   getContenido,
   getContenidosExperiencia,
   postContenido,
   putContenido,
-//   deleteContenido,
-} = require("../controllers/contenido");
+  //   deleteContenido,
+} = require('../controllers/contenido');
 
 const router = Router();
 
@@ -14,11 +14,11 @@ const router = Router();
 
 // router.get("/:IdContenido", getContenido);
 
-router.get("/experiencia/:IdExperiencia", getContenidosExperiencia);
+router.get('/experiencia/:IdExperiencia', getContenidosExperiencia);
 
-router.post("/", postContenido);
+router.post('/', postContenido);
 
-router.put("/:IdContenido", putContenido);
+router.put('/:IdContenido', putContenido);
 
 // router.delete("/:IdContenido", deleteContenido);
 

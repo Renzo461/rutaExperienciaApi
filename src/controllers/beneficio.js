@@ -1,5 +1,5 @@
-const { request, response } = require("express");
-const connection = require("../conexion");
+const { request, response } = require('express');
+const connection = require('../conexion');
 
 // const getBeneficios = (req = request, res = response) => {
 //   return res.status(200).json(`beneficios`);
@@ -12,20 +12,18 @@ const connection = require("../conexion");
 // };
 
 const getBeneficiosCarrera = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   const IdCarrera = req.params.id;
 
   knex
-    .raw("CALL get_beneficios_carrera(?)", [IdCarrera])
-    .then(([[beneficios]]) => {
-      return res.status(200).json(beneficios);
-    })
+    .raw('CALL get_beneficios_carrera(?)', [IdCarrera])
+    .then(([[beneficios]]) => res.status(200).json(beneficios))
     .catch((error) => {
       console.log(error);
       res.status(500).json({
         ok: false,
-        msg: "Por Favor hable con el administrador",
+        msg: 'Por Favor hable con el administrador',
       });
     })
     .finally(() => {
@@ -34,19 +32,17 @@ const getBeneficiosCarrera = (req = request, res = response) => {
 };
 
 const postBeneficio = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
 
   const nuevoBeneficio = [req.body.BeDescripcion, req.body.IdCarrera];
 
   knex
-    .raw("CALL post_beneficio(?,?,@resultado)", nuevoBeneficio)
-    .then(() => {
-      return knex.raw("SELECT @resultado");
-    })
+    .raw('CALL post_beneficio(?,?,@resultado)', nuevoBeneficio)
+    .then(() => knex.raw('SELECT @resultado'))
     .then(([[codigo]]) => {
-      respuesta = codigo["@resultado"];
+      const respuesta = codigo['@resultado'];
       if (respuesta === 400) {
-        throw new Error("Carrera no existe");
+        throw new Error('Carrera no existe');
       }
       return res.status(201).json({
         ok: true,
@@ -57,7 +53,7 @@ const postBeneficio = (req = request, res = response) => {
       console.log(error);
       res.status(400).json({
         ok: false,
-        msg: "No se pudo crear el beneficio, Carrera no existe",
+        msg: 'No se pudo crear el beneficio, Carrera no existe',
       });
     })
     .finally(() => {
@@ -66,34 +62,30 @@ const postBeneficio = (req = request, res = response) => {
 };
 
 const putBeneficio = (req = request, res = response) => {
-  const knex = require("knex")(connection);
+  const knex = require('knex')(connection);
   const idBeneficio = +req.params.id;
 
-  const editBeneficio = [
-    idBeneficio,
-    req.body.BeDescripcion,
-    req.body.IdCarrera,
-  ];
+  const editBeneficio = [idBeneficio, req.body.BeDescripcion];
 
   knex
-    .raw("CALL put_beneficio(?,?,?)", editBeneficio)
-    .then(([[r]]) => {
-      if (r.length) {
-        return res.status(200).json({
-          ok: true,
-          msg: `Beneficio ${idBeneficio} editado`,
-        });
+    .raw('CALL put_beneficio(?,?,@resultado)', editBeneficio)
+    .then(() => knex.raw('SELECT @resultado'))
+    .then(([[codigo]]) => {
+      const respuesta = codigo['@resultado'];
+      if (respuesta === 400) {
+        throw new Error('Beneficio no existe');
       }
-      return res.status(404).json({
-        ok: false,
-        msg: `No existe el beneficio ${idBeneficio}`,
+      return res.status(200).json({
+        ok: true,
+        msg: `Beneficio ${idBeneficio} editado`,
       });
     })
     .catch((error) => {
       console.log(error);
-      res.status(400).json({
+      res.status(500).json({
         ok: false,
-        msg: "No se pudo editar el beneficio, Carrera no existe",
+        msg: 'Comuniquese con el administrador',
+        info: error.message,
       });
     })
     .finally(() => {
@@ -101,11 +93,29 @@ const putBeneficio = (req = request, res = response) => {
     });
 };
 
-// const deleteBeneficio = (req = request, res = response) => {
-//   const idBeneficio = req.params.id;
-
-//   return res.status(200).json(`deletebeneficio ${idBeneficio}`);
-// };
+const deleteBeneficio = (req = request, res = response) => {
+  const knex = require('knex')(connection);
+  const idBeneficio = req.params.id;
+  knex
+    .raw('CALL delete_beneficio(?)', [idBeneficio])
+    .then(() => {
+      return res.status(200).json({
+        ok: true,
+        msg: `Beneficio ${idBeneficio} borrado`,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({
+        ok: false,
+        msg: 'Comuniquese con el administrador',
+        info: error.message,
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 module.exports = {
   // getBeneficios,
@@ -113,5 +123,5 @@ module.exports = {
   getBeneficiosCarrera,
   postBeneficio,
   putBeneficio,
-  // deleteBeneficio,
+  deleteBeneficio,
 };
