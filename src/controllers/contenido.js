@@ -147,38 +147,31 @@ const putContenido = (req = request, res = response) => {
     });
 };
 
-// const deleteContenido = async (req = request, res = response) => {
-//   const knex = require("knex")(connection);
+const deleteContenido = async (req = request, res = response) => {
+  const knex = require('knex')(connection);
 
-//   const IdContenido = req.params.IdContenido;
+  const IdContenido = req.params.IdContenido;
 
-//   await knex("tblContenido")
-//     .where("IdContenido", IdContenido)
-//     .del()
-//     .then((contenido) => {
-//       if (!contenido) {
-//         return res.status(404).json({
-//           ok: false,
-//           msg: `Contenido ${IdContenido} no existe`,
-//         });
-//       }
-
-//       return res.status(200).json({
-//         ok: true,
-//         msg: `Contenido ${IdContenido} eliminado`,
-//       });
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       res.status(400).json({
-//         ok: false,
-//         msg: "Por Favor hable con el administrador",
-//       });
-//     })
-//     .finally(() => {
-//       knex.destroy();
-//     });
-// };
+  await knex
+    .raw('CALL delete_contenido(?)', [IdContenido])
+    .then(() => {
+      return res.status(200).json({
+        ok: true,
+        msg: `Contenido ${IdContenido} borrado`,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).json({
+        ok: false,
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 module.exports = {
   // getContenidos,
@@ -186,5 +179,5 @@ module.exports = {
   getContenidosExperiencia,
   postContenido,
   putContenido,
-  // deleteContenido,
+  deleteContenido,
 };

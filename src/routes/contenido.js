@@ -5,7 +5,7 @@ const {
   getContenidosExperiencia,
   postContenido,
   putContenido,
-  //   deleteContenido,
+  deleteContenido,
 } = require('../controllers/contenido');
 
 const router = Router();
@@ -20,6 +20,6 @@ router.post('/', postContenido);
 
 router.put('/:IdContenido', putContenido);
 
-// router.delete("/:IdContenido", deleteContenido);
+router.delete('/:IdContenido', deleteContenido);
 
 module.exports = router;

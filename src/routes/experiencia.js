@@ -4,7 +4,7 @@ const {
   //   getExperiencias,
   postExperiencia,
   putExperiencia,
-  //   deleteExperiencia,
+  deleteExperiencia,
   getExperienciasCarrera,
 } = require('../controllers/experiencia');
 
@@ -20,6 +20,6 @@ router.post('/', postExperiencia);
 
 router.put('/:id', putExperiencia);
 
-// router.delete("/:id", deleteExperiencia);
+router.delete('/:id', deleteExperiencia);
 
 module.exports = router;

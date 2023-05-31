@@ -161,38 +161,31 @@ const putExperiencia = (req = request, res = response) => {
     });
 };
 
-// const deleteExperiencia = async (req = request, res = response) => {
-//   const knex = require("knex")(connection);
+const deleteExperiencia = async (req = request, res = response) => {
+  const knex = require('knex')(connection);
 
-//   const IdExperiencia = req.params.id;
+  const IdExperiencia = req.params.id;
 
-//   await knex("tblExperiencia")
-//     .where("IdExperiencia", IdExperiencia)
-//     .del()
-//     .then((experiencia) => {
-//       if (!experiencia) {
-//         return res.status(404).json({
-//           ok: false,
-//           msg: `Experiencia ${IdExperiencia} no existe`,
-//         });
-//       }
-
-//       return res.status(200).json({
-//         ok: true,
-//         msg: `Experiencia ${IdExperiencia} eliminado`,
-//       });
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       return res.status(500).json({
-//         ok: false,
-//         msg: "Por Favor hable con el administrador",
-//       });
-//     })
-//     .finally(() => {
-//       knex.destroy();
-//     });
-// };
+  await knex
+    .raw('CALL delete_experiencia(?)', [IdExperiencia])
+    .then(() => {
+      return res.status(200).json({
+        ok: true,
+        msg: `Experiencia ${IdExperiencia} eliminada`,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json({
+        ok: false,
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 module.exports = {
   // getExperiencias,
@@ -200,5 +193,5 @@ module.exports = {
   getExperienciasCarrera,
   postExperiencia,
   putExperiencia,
-  // deleteExperiencia,
+  deleteExperiencia,
 };
