@@ -6,6 +6,7 @@ const {
   putExperiencia,
   deleteExperiencia,
   getExperienciasCarrera,
+  getExperienciasAndContendoByCarreraAndCiclo,
 } = require('../controllers/experiencia');
 
 const router = Router();
@@ -15,6 +16,8 @@ const router = Router();
 // router.get("/:id", getExperiencia);
 
 router.get('/carrera/:IdCarrera', getExperienciasCarrera);
+
+router.get('/:idCarrera/:exCicloInicio/:exCicloFin', getExperienciasAndContendoByCarreraAndCiclo) //experiencias por ciclo especifico
 
 router.post('/', postExperiencia);
 

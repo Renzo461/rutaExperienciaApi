@@ -8,6 +8,7 @@ const carrera = require('./routes/carrera');
 const sede = require('./routes/sede');
 const pregunta = require('./routes/pregunta');
 const calificacion = require('./routes/calificacion');
+const solicitarInformacion = require('./routes/solicitarInformacion')
 
 // CREACION DEL SERVIDOR
 const app = express();
@@ -39,3 +40,4 @@ app.use('/carrera', carrera);
 app.use('/sede', sede);
 app.use('/pregunta', pregunta);
 app.use('/calificacion', calificacion);
+app.use('/solicitar_informacion',solicitarInformacion) //postSubirSolicitudDeInformación
