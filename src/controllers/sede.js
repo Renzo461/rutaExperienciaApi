@@ -26,7 +26,7 @@ const getSede = (req = request, res = response) => {
 
   knex
     .raw('CALL get_sede(?)', [idSede])
-    .then(([[sede]]) => res.status(200).json(sede))
+    .then(([[[sede]]]) => res.status(200).json(sede))
     .catch((error) => {
       console.log(error);
       return res.status(500).json({

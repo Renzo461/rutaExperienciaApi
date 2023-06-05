@@ -29,7 +29,7 @@ const getCarrera = (req = request, res = response) => {
     .catch((error) => {
       console.log(error);
       return res.status(500).json({
-        ok: false,
+        ok: false,                                
         msg: 'Por Favor hable con el administrador',
       });
     })
