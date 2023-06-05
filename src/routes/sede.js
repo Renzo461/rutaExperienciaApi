@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const {
   getSedes,
-  //   getSede,
+  getSede,
   //   postSede,
   //   putSede,
   //   deleteSede,
@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/', getSedes);
 
-// router.get("/:id", getSede);
+router.get('/:id', getSede);
 
 // router.post("/", postSede);
 
