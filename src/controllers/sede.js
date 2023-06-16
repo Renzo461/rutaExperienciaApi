@@ -1,7 +1,7 @@
 const { request, response } = require('express');
 const connection = require('../conexion');
 
-const getSedes = (req = request, res = response) => {
+const getSedes = (_, res = response) => {
   const knex = require('knex')(connection);
 
   knex
@@ -19,12 +19,25 @@ const getSedes = (req = request, res = response) => {
     });
 };
 
-// const getSede = (req = request, res = response) => {
+const getSede = (req = request, res = response) => {
+  const idSede = req.params.id;
 
-//     const idSede = req.params.id
+  const knex = require('knex')(connection);
 
-//     return res.status(200).json(`Sede ${idSede}`)
-// }
+  knex
+    .raw('CALL get_sede(?)', [idSede])
+    .then(([[[sede]]]) => res.status(200).json(sede))
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json({
+        ok: false,
+        msg: 'Por Favor hable con el administrador',
+      });
+    })
+    .finally(() => {
+      knex.destroy();
+    });
+};
 
 // const postSede = (req = request, res = response) => {
 //     return res.status(200).json('postSede')
@@ -46,7 +59,7 @@ const getSedes = (req = request, res = response) => {
 
 module.exports = {
   getSedes,
-  // getSede,
+  getSede,
   // postSede,
   // putSede,
   // deleteSede
