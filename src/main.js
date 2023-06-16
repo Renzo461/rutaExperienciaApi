@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const auth = require('./routes/auth');
@@ -41,3 +42,5 @@ app.use('/sede', sede);
 app.use('/pregunta', pregunta);
 app.use('/calificacion', calificacion);
 app.use('/solicitar_informacion',solicitarInformacion) //postSubirSolicitudDeInformación
+
+app.use('/uploads', express.static(path.resolve('uploads')));
