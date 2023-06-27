@@ -74,7 +74,7 @@ const loginUsuario = async (req = request, res = response) => {
         sede: usuario.sede,
         ciclos: usuario.ciclos,
         carrera: usuario.carrera,
-        IdCarrera: usuario.IdCarrera,
+        idCarrera: usuario.IdCarrera,
       });
     })
     .catch((error) => {
