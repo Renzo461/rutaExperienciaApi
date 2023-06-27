@@ -69,7 +69,13 @@ const loginUsuario = async (req = request, res = response) => {
       if (!validPassword) {
         throw new Error('Contraseña incorrecta');
       }
-      return res.status(200).json(usuario);
+      return res.status(200).json({
+        ok: true,
+        sede: usuario.sede,
+        ciclos: usuario.ciclos,
+        carrera: usuario.carrera,
+        IdCarrera: usuario.IdCarrera,
+      });
     })
     .catch((error) => {
       console.log(error);
