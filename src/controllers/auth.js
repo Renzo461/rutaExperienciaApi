@@ -6,12 +6,13 @@ const connection = require('../conexion');
 
 const newUsuario = async (req = request, res = response) => {
   const knex = require('knex')(connection);
-
+  // ENCRIPTAR CONTRASEÑA
+  const salt = bcrypt.genSaltSync();
   const newUser = [
     req.body.UsEmail,
     req.body.UsDNI,
     req.body.IdCarrera,
-    req.body.UsContrasena,
+    bcrypt.hashSync(req.body.UsContrasena, salt),
     req.body.UsNombres,
     req.body.UsApellidos,
     req.body.UsTelefono,
