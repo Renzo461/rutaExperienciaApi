@@ -7,76 +7,46 @@ const connection = require('../conexion');
 const newUsuario = async (req = request, res = response) => {
   const knex = require('knex')(connection);
 
-  const { UsDNI, IdCarrera, UsEmail } = req.body;
+  const newUser = [
+    req.body.UsEmail,
+    req.body.UsDNI,
+    req.body.IdCarrera,
+    req.body.UsContrasena,
+    req.body.UsNombres,
+    req.body.UsApellidos,
+    req.body.UsTelefono,
+  ];
 
-  const newUser = req.body;
-  delete newUser.IdCarrera;
-
-  try {
-    // VERIFICAR SI EL EMAIL YA ESTA REGISTRADO
-    let usuario = await knex
-      .select('*')
-      .from('tblUsuario')
-      .where('UsEmail', UsEmail)
-      .then((r) => r[0]);
-    if (usuario) {
-      return res.status(400).json({
-        ok: false,
-        msg: 'El correo ya esta registrado',
+  knex
+    .raw('CALL post_user(?,?,?,?,?,?,?,@resultado)', newUser)
+    .then(() => knex.raw('SELECT @resultado'))
+    .then(([[result]]) => {
+      const codigo = result['@resultado'];
+      if (codigo === 400) {
+        throw new Error('Email ya registrado');
+      }
+      if (codigo === 401) {
+        throw new Error('Dni ya registrado');
+      }
+      if (codigo === 402) {
+        throw new Error('Carrera no existe');
+      }
+      return res.status(201).json({
+        ok: true,
+        msg: `Se creo el coordinador`,
       });
-    }
-
-    // VERIFICAR SI EL DNI YA ESTA REGISTRADO
-    usuario = await knex
-      .select('*')
-      .from('tblUsuario')
-      .where('UsDNI', UsDNI)
-      .then((r) => r[0]);
-
-    if (usuario) {
-      return res.status(400).json({
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({
         ok: false,
-        msg: 'El DNI ya esta registrado',
+        msg: 'Por Favor hable con el administrador',
+        info: error.message,
       });
-    }
-
-    // VERIFICAR SI LA CARRERA EXISTE
-    const carrera = await knex
-      .select('*')
-      .from('tblCarrera')
-      .where('IdCarrera', IdCarrera)
-      .then((r) => r[0]);
-
-    if (!carrera) {
-      return res.status(400).json({
-        ok: false,
-        msg: 'La carrera no existe',
-      });
-    }
-
-    // ENCRIPTAR CONTRASEÑA
-    const salt = bcrypt.genSaltSync();
-    newUser.UsContrasena = bcrypt.hashSync(newUser.UsContrasena, salt);
-
-    // CREAR USUARIO
-    const [IdUsuario] = await knex.insert(newUser).into('tblUsuario');
-
-    // CREAR COORDINADOR
-    const newCoor = { IdCarrera, IdUsuario };
-    const [IdCoordinador] = await knex.insert(newCoor).into('tblCoordinador');
-    knex.destroy();
-    return res.status(201).json({
-      ok: true,
-      msg: 'coordinador creado',
-      IdCoordinador,
+    })
+    .finally(() => {
+      knex.destroy();
     });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      ok: false,
-      msg: 'Por Favor hable con el administrador',
-    });
-  }
 };
 
 const loginUsuario = async (req = request, res = response) => {
@@ -85,44 +55,27 @@ const loginUsuario = async (req = request, res = response) => {
   const { user, password } = req.body;
 
   knex
-    .select('*')
-    .from('tblUsuario')
-    .join(
-      'tblCoordinador',
-      'tblCoordinador.IdUsuario',
-      '=',
-      'tblUsuario.IdUsuario'
-    )
-    .join('tblCarrera', 'tblCoordinador.IdCarrera', '=', 'tblCarrera.IdCarrera')
-    .join('tblSede', 'tblCarrera.IdSede', '=', 'tblSede.IdSede')
-    .where('UsEmail', user)
-    .then(([usuario]) => {
-      if (!usuario) {
-        return res.status(500).json({
-          ok: false,
-          msg: 'El usuario no existe',
-        });
-      }
+    .raw('CALL post_auth_login(?,?,@resultado,@usuario_data)', [user, password])
+    .then(() => knex.raw('SELECT @resultado,@usuario_data'))
+    .then(([[result]]) => {
+      const codigo = result['@resultado'];
+      const usuario = JSON.parse(result['@usuario_data']);
       const validPassword = bcrypt.compareSync(password, usuario.UsContrasena);
-      if (!validPassword) {
-        return res.status(500).json({
-          ok: false,
-          msg: 'La contraseña no coincide',
-        });
+      delete usuario.UsContrasena;
+      if (codigo === 500) {
+        throw new Error('Usuario no existe');
       }
-      return res.json({
-        ok: true,
-        idCarrera: usuario.IdCarrera,
-        carrera: usuario.CaNombre,
-        sede: usuario.SeNombre,
-        ciclos: usuario.CaCantidadCiclos,
-      });
+      if (!validPassword) {
+        throw new Error('Contraseña incorrecta');
+      }
+      return res.status(200).json(usuario);
     })
     .catch((error) => {
       console.log(error);
       res.status(500).json({
         ok: false,
         msg: 'Por Favor hable con el administrador',
+        info: error.message,
       });
     })
     .finally(() => {
