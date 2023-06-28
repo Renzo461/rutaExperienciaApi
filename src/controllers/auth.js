@@ -71,9 +71,8 @@ const loginUsuario = async (req = request, res = response) => {
       }
       return res.status(200).json({
         ok: true,
-        sede: usuario.sede,
-        ciclos: usuario.ciclos,
-        carrera: usuario.carrera,
+        usNombres: usuario.UsNombres,
+        usApellidos: usuario.UsApellidos,
         idCarrera: usuario.IdCarrera,
       });
     })
