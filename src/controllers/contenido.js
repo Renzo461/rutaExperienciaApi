@@ -72,7 +72,7 @@ const postContenido = (req = request, res = response) => {
   const nuevoContenido = [
     req.body.CoTitulo,
     req.body.CoDescripcion,
-    req.body.CoUrlMedia,
+    req.file.path, //UrlMedia
     req.body.IdTipoMedia,
     req.body.IdExperiencia,
   ];
