@@ -13,7 +13,7 @@ const solicitarInformacion = require('./routes/solicitarInformacion')
 
 // CREACION DEL SERVIDOR
 const app = express();
-const PORT = 4040;
+const PORT = 2031;
 
 // CORS
 app.use(cors());
