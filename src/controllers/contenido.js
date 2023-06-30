@@ -69,10 +69,12 @@ const getContenidosExperiencia = (req = request, res = response) => {
 const postContenido = (req = request, res = response) => {
   const knex = require('knex')(connection);
 
+  //console.log(req.file);
+
   const nuevoContenido = [
     req.body.CoTitulo,
     req.body.CoDescripcion,
-    req.file.path, //UrlMedia
+    req.file ? req.file.path : req.body.CoUrlMedia, //UrlMedia
     req.body.IdTipoMedia,
     req.body.IdExperiencia,
   ];
@@ -114,9 +116,12 @@ const putContenido = (req = request, res = response) => {
     IdContenido,
     req.body.CoTitulo,
     req.body.CoDescripcion,
-    req.body.CoUrlMedia,
+    req.file ? req.file.path : req.body.CoUrlMedia,
     req.body.IdTipoMedia,
   ];
+
+  //console.log('Edit contenido');
+  //console.log(req.body.CoFile.name);
 
   knex
     .raw('CALL put_contenido(?,?,?,?,?,@resultado)', editarContenido)

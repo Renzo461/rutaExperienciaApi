@@ -1,5 +1,4 @@
-import upload from '../helpers/multer'
-
+const upload = require('../helpers/multer');
 const { Router } = require('express');
 const {
   //   getContenidos,
@@ -18,9 +17,11 @@ const router = Router();
 
 router.get('/experiencia/:IdExperiencia', getContenidosExperiencia);
 
-router.post('/', upload.single('image'), postContenido);
+router.post('/', upload.single('CoFile'), postContenido);
 
-router.put('/:IdContenido', putContenido);
+//router.put('/:IdContenido', upload.single('CoFile'), putContenido);
+
+router.put('/:IdContenido', upload.single('CoFile'), putContenido);
 
 router.delete('/:IdContenido', deleteContenido);
 
